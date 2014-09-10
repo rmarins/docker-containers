@@ -13,4 +13,4 @@ Stop container:
 ./stop.sh
 
 Connect to PostgreSQL server:
-psql -h {container_ip} -U dockeruser -d dockerdb
+psql -h {container_ip} -U postgres

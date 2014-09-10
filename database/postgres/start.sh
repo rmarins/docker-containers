@@ -11,7 +11,7 @@ fi
 
 # Start PostgreSQL server container
 echo "Starting PostgreSQL server ..."
-image_postgres=$(docker run -d plopezse/PostgreSQL)
+image_postgres=$(docker run -d rmarins/postgresql)
 ip_postgres=$(docker inspect $image_postgres | grep IPAddress | awk '{print $2}' | tr -d '",')
 echo $image_postgres > docker.pid
 
@@ -19,5 +19,5 @@ echo $image_postgres > docker.pid
 echo "Installation finished"
 echo ""
 echo "PostgreSQL server started in $ip_postgres:5432"
-echo "Try to connect: psql -h $ip_postgres -U dockeruser -d dockerdb"
+echo "Try to connect: psql -h $ip_postgres -U postgres"
 
