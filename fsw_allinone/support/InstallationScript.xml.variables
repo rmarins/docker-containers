@@ -1,0 +1,4 @@
+fsw.password=redhat@2
+saml.storepass=redhat@2
+vault.keystorepwd=redhat@2
+db.password=jboss

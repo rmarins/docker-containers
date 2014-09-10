@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+
+INSTALLDIR=/home/jboss/fsw
+
+###### CREATE DB #################
+
+echo "   + Prepare DB"
+
+psql -h __pgserver_docker_local__ -U postgres -c "DROP DATABASE IF EXISTS fswdb"
+psql -h __pgserver_docker_local__ -U postgres -c "DROP USER IF EXISTS jboss"
+psql -h __pgserver_docker_local__ -U postgres -c "CREATE USER jboss WITH PASSWORD 'jboss'"
+psql -h __pgserver_docker_local__ -U postgres -c "CREATE DATABASE fswdb"
+psql -h __pgserver_docker_local__ -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE fswdb to jboss"
+
+
+###### FSW INSTALL ###############
+
+echo "   + FSW binaries"
+
+java -jar $INSTALLDIR/software/jboss-fsw-installer-6.0.0.GA-redhat-4.jar $INSTALLDIR/support/InstallationScript.xml -variablefile $INSTALLDIR/support/InstallationScript.xml.variables
+
+rm -rf $INSTALLDIR/jboss-eap-6.1/standalone/configuration/standalone_xml_history/current
+
+sed -i -e 's/<mod-cluster-config advertise-socket="modcluster" connector="ajp">/<mod-cluster-config advertise-socket="modcluster" connector="ajp" proxy-list="127.0.0.1:80">/g' $INSTALLDIR/jboss-eap-6.1/standalone/configuration/standalone-ha.xml
+
+sed -i'' -e "s/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*:5432/postgresql.docker.local:5432/g" /home/jboss/fsw/jboss-eap-6.1/standalone/configuration/standalone-ha.xml
+
+
+###### SUPERVISORD PREPARE #######
+
+echo "   + supervisor container services"
+
+for cfgfile in $INSTALLDIR/supervisord/*.ini; do
+	cat $cfgfile >> /etc/supervisord.conf
+	rm -rf $cfgfile
+done
