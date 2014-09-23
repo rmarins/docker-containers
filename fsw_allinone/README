@@ -1,0 +1,19 @@
+JBoss FSW Cluster All-in-One Container
+======================================
+
+By using this Dockerfile you'll build a FSW cluster in a single container.
+
+Drop the required files in the ./software directory and build it running the ./install.sh .
+
+Run by using the ./start.sh and it will print the container IP address when finished.
+
+Get access to JBoss FSW admin console using:
+
+  - Node 1: http://<container-ip>:9990/ - user: admin / pswd: redhat@2
+  - Node 2: http://<container-ip>:10990/ - user: admin / pswd: redhat@2
+
+Or try the mod_cluster manager console acessing:
+
+  - http://<container-ip>/mod_cluster_manager
+
+Services must be deployed on both Nodes for experiencing the HA features.
