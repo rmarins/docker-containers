@@ -26,6 +26,14 @@ sed -i -e 's/<mod-cluster-config advertise-socket="modcluster" connector="ajp">/
 
 sed -i'' -e "s/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*:5432/postgresql.docker.local:5432/g" /home/jboss/fsw/jboss-eap-6.1/standalone/configuration/standalone-ha.xml
 
+# include RT-Gov clustering cache at line 288
+sed -i '288i<cache-container name="rtgov-cluster" aliases="ha-partition" default-cache="default" jndi-name="java:jboss/infinispan/container/rtgov-cluster"><transport lock-timeout="60000"/><replicated-cache name="default" mode="SYNC" batching="true"><locking isolation="REPEATABLE_READ"/></replicated-cache><replicated-cache name="Principals" mode="SYNC"><locking isolation="REPEATABLE_READ"/><transaction mode="FULL_XA" locking="PESSIMISTIC"/></replicated-cache></cache-container>' $INSTALLDIR/jboss-eap-6.1/standalone/configuration/standalone-ha.xml
+
+# set up RT-Gov
+sed -i -e 's/^collectionEnabled.*/collectionEnabled=true/g' $INSTALLDIR/jboss-eap-6.1/standalone/configuration/overlord-rtgov.properties
+
+sed -i -e 's/#infinispan.container(.*)/infinispan.container=java:jboss/infinispan/container/rtgov-cluster/g' $INSTALLDIR/jboss-eap-6.1/standalone/configuration/overlord-rtgov.properties
+
 
 ###### SUPERVISORD PREPARE #######
 
